@@ -19,9 +19,10 @@ async function run() {
 
   console.log('\n--- Testing Groq LLM ---\n');
 
-  const answer = await chat([
-    { role: 'user', content: 'What is RAG in AI? Answer in 2 sentences.' }
-  ]);
+ const answer = await chat([
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'What is RAG in AI? Answer in 2 sentences.' }
+]);
   console.log('Groq answer:', answer);
 }
 

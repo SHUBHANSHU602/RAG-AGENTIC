@@ -1,16 +1,25 @@
-require('dotenv').config();
-const { OpenAI } = require('openai');
+const { pipeline } = require('@xenova/transformers');
 
-const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+let embedder = null;
+
+async function getEmbedder() {
+  if (!embedder) {
+    console.log('Loading embedding model... (first time only)');
+    embedder = await pipeline(
+      'feature-extraction',
+      'Xenova/all-MiniLM-L6-v2'
+    );
+  }
+  return embedder;
+}
 
 async function embed(text) {
-    const response = await client.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: text
-    });
-    return response.data[0].embedding;
+  const embedderPipeline = await getEmbedder();
+  const output = await embedderPipeline(text, {
+    pooling: 'mean',
+    normalize: true
+  });
+  return Array.from(output.data);
 }
 
 function cosineSimilarity(vecA, vecB) {
