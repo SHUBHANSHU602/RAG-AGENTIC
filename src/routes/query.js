@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 
     // Step 2: search Qdrant for relevant docs
     const results = await searchVectors(queryVec, 4);
-    const filteredResults = results.filter(r => r.score > 0.2);
+    const filteredResults = results.filter(r => r.score > 0.05);
 
    if (filteredResults.length === 0) {
    return res.json({ 
