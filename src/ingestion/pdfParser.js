@@ -14,7 +14,11 @@ async function loadPDF(filePath) {
       pages.forEach(page => {
         page.Texts.forEach(textItem => {
           textItem.R.forEach(r => {
-            fullText += decodeURIComponent(r.T) + ' ';
+              try {
+          fullText += decodeURIComponent(r.T.replace(/%(?![0-9A-Fa-f]{2})/g, '%25')) + ' ';
+        } catch {
+          fullText += r.T + ' '; // fallback: use raw text if decode fails
+        }
           });
         });
         fullText += '\n';

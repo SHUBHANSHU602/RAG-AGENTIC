@@ -8,7 +8,7 @@ app.use(express.json());
 // Routes
 app.use('/ingest', require('./src/routes/ingest'));
 app.use('/query', require('./src/routes/query'));
-
+app.use('/debug', require('./src/routes/debug'));  // ← this one
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'agentic-rag running' });
 });
