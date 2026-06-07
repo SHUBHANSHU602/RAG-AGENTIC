@@ -22,6 +22,15 @@ async function embed(text) {
   });
   return Array.from(output.data);
 }
+async function embedBatch(texts) {
+  const embedderPipeline = await getEmbedder();
+  const vectors = [];
+  for (const text of texts) {
+    const output = await embedderPipeline(text, { pooling: 'mean', normalize: true });
+    vectors.push(Array.from(output.data));
+  }
+  return vectors;
+}
 
 function cosineSimilarity(vecA, vecB) {
   const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
@@ -30,4 +39,4 @@ function cosineSimilarity(vecA, vecB) {
   return dot / (magA * magB);
 }
 
-module.exports = { embed, cosineSimilarity };
+module.exports = { embed, embedBatch,cosineSimilarity };

@@ -20,6 +20,12 @@ async function createCollection() {
   });
   console.log('Collection created:', COLLECTION_NAME);
 }
+// NEW — store multiple points in one upsert call (much faster)
+async function storeBatch(points) {
+  await client.upsert(COLLECTION_NAME, { points });
+}
+
+
 
 async function storeVector(id, text, vector) {
   await client.upsert(COLLECTION_NAME, {
@@ -34,5 +40,10 @@ async function searchVectors(queryVector, topK = 3) {
     with_payload: true
   });
 }
+async function deleteCollection() {
+  await client.deleteCollection(COLLECTION_NAME);
+  console.log('Collection deleted:', COLLECTION_NAME);
+}
 
-module.exports = { createCollection, storeVector, searchVectors };
+
+module.exports = { createCollection, storeVector, storeBatch, searchVectors, deleteCollection };
