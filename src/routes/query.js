@@ -13,12 +13,8 @@ router.post('/', async (req, res) => {
     }
 
     const trimmed = question.trim();
-    if (trimmed.length < 3) {
-      return res.status(400).json({ error: 'question must be at least 3 characters' });
-    }
-    if (trimmed.length > 1000) {
-      return res.status(400).json({ error: 'question too long — max 1000 characters' });
-    }
+    if (trimmed.length < 3) return res.status(400).json({ error: 'question must be at least 3 characters' });
+    if (trimmed.length > 1000) return res.status(400).json({ error: 'question too long — max 1000 characters' });
 
     const queryVec = await embed(trimmed);
     const results = await searchVectors(queryVec, 4);
@@ -32,7 +28,10 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const context = filteredResults.map(r => r.payload.text).join('\n\n');
+    // Use parentText if available, fall back to child text
+    const context = filteredResults
+      .map(r => r.payload.parentText || r.payload.text)
+      .join('\n\n');
 
     const answer = await chat([
       {
@@ -49,7 +48,8 @@ router.post('/', async (req, res) => {
       answer,
       retrieved: filteredResults.length,
       sources: filteredResults.map(r => ({
-        text: r.payload.text,
+        childText: r.payload.text,
+        parentText: r.payload.parentText?.slice(0, 200) ?? null,
         score: parseFloat(r.score.toFixed(4)),
         chunkIndex: r.payload.chunkIndex ?? null,
         source: r.payload.source ?? null
